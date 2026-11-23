@@ -24,6 +24,10 @@ Hugo + PaperMod 主题，推送到 main 分支后由 GitHub Actions 自动部署
 
    一两分钟后，网站自动更新。
 
+## 手机上更新
+
+打开 https://huayuliu114514.github.io/write/ （或点站内菜单「写文章」），填好内容点提交，会自动跳到 GitHub 新建文件页（内容已自动填好），点绿色 Commit changes 即可，一两分钟后网站自动更新。第一次使用需要在手机浏览器里登录一次 GitHub。
+
 ## 常用链接
 
 - 源码仓库：https://github.com/huayuliu114514/huayuliu114514.github.io

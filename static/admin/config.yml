@@ -1,0 +1,47 @@
+# 万束屋 · 手机写文章后台配置（Decap CMS）
+backend:
+  name: github
+  repo: huayuliu114514/huayuliu114514.github.io
+  branch: main
+
+locale: zh_Hans
+
+media_folder: "static/img/uploads"
+public_folder: "/img/uploads"
+
+collections:
+  - name: "posts"
+    label: "文章"
+    label_singular: "文章"
+    folder: "content/posts"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    summary: "{{title}} · {{date}}"
+    fields:
+      - { label: "标题", name: "title", widget: "string" }
+      - label: "发布日期"
+        name: "date"
+        widget: "datetime"
+        default: "{{now}}"
+        date_format: "YYYY-MM-DD"
+        time_format: "HH:mm:ss"
+        format: "YYYY-MM-DDTHH:mm:ss+08:00"
+      - label: "草稿"
+        name: "draft"
+        widget: "boolean"
+        default: true
+        hint: "开启 = 暂不发布（存草稿）；关闭 = 直接发布到网站"
+      - { label: "标签", name: "tags", widget: "list", required: false, default: [] }
+      - { label: "分类", name: "categories", widget: "list", required: false, default: [] }
+      - { label: "摘要", name: "description", widget: "text", required: false }
+      - { label: "正文", name: "body", widget: "markdown" }
+
+  - name: "pages"
+    label: "独立页面"
+    files:
+      - name: "about"
+        label: "关于页"
+        file: "content/about.md"
+        fields:
+          - { label: "标题", name: "title", widget: "string" }
+          - { label: "内容", name: "body", widget: "markdown" }

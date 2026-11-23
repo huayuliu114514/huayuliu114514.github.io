@@ -7,6 +7,13 @@ hasCJKLanguage: true
 enableRobotsTXT: true
 
 params:
+  assets:
+    favicon: 'favicon.png'
+    favicon16x16: 'favicon-16x16.png'
+    favicon32x32: 'favicon-32x32.png'
+  label:
+    icon: 'img/chisato.png'
+    iconHeight: 40
   homeInfoParams:
     Title: '万束屋'
     Content: >-
@@ -36,3 +43,7 @@ menu:
       name: 关于
       url: /about/
       weight: 4
+    - identifier: write
+      name: 写文章
+      url: /write/
+      weight: 5

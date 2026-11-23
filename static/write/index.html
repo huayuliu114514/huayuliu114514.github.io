@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="robots" content="noindex" />
+<title>万束屋 · 写文章</title>
+<link rel="preconnect" href="https://fonts.loli.net" crossorigin>
+<link href="https://fonts.loli.net/css2?family=ZCOOL+KuaiLe&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --pink: #ff9ec0; --pink-soft: #ffe4ee; --ink: #4a3b42;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; min-height: 100vh;
+    font: 16px/1.7 -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+    color: var(--ink);
+    background:
+      radial-gradient(900px 500px at 90% -10%, rgba(255,211,224,.6), transparent 60%),
+      radial-gradient(700px 400px at -10% 40%, rgba(255,228,237,.5), transparent 55%),
+      #fff8fa;
+  }
+  .wrap { max-width: 640px; margin: 0 auto; padding: 24px 18px 60px; }
+  h1 {
+    font-family: "ZCOOL KuaiLe", "YouYuan", "幼圆", sans-serif;
+    font-weight: 400; letter-spacing: .05em;
+    font-size: 2rem; text-align: center; margin: .4em 0 .2em;
+  }
+  .sub { text-align: center; color: #a08994; margin-bottom: 1.6em; }
+  label { display: block; margin: 1.1em 0 .35em; font-weight: 600; }
+  input[type=text], textarea {
+    width: 100%; padding: 12px 14px; border: 1.5px solid #f3cfdd;
+    border-radius: 12px; font: inherit; background: #fff;
+    outline: none; transition: border-color .15s;
+  }
+  input[type=text]:focus, textarea:focus { border-color: var(--pink); }
+  textarea { min-height: 220px; resize: vertical; }
+  .row { display: flex; gap: 12px; }
+  .row > div { flex: 1; }
+  .hint { font-size: .85rem; color: #b39aa5; margin-top: .3em; }
+  .radio { display: flex; gap: 14px; margin-top: .4em; }
+  .radio span { display: flex; align-items: center; gap: 5px; cursor: pointer; }
+  .btn {
+    display: block; width: 100%; margin-top: 1.8em; padding: 14px;
+    border: none; border-radius: 14px; cursor: pointer;
+    background: linear-gradient(135deg, #ff9ec0, #ff7fae);
+    color: #fff; font-size: 1.15rem; font-weight: 700;
+    box-shadow: 0 4px 14px rgba(255,126,174,.4);
+  }
+  .btn:active { transform: translateY(1px); }
+  .btn.ghost {
+    background: #fff; color: var(--pink); border: 1.5px solid var(--pink);
+    box-shadow: none; margin-top: .8em; font-size: 1rem;
+  }
+  .note {
+    margin-top: 2.2em; padding: 14px 16px; border-radius: 12px;
+    background: #fff; border: 1px dashed #f0c4d5; font-size: .92rem;
+  }
+  .note b { color: #d95f8e; }
+  .ok { display: none; margin-top: 1em; padding: 12px; border-radius: 12px;
+        background: #eafff0; color: #2e7d4f; border: 1px solid #b8e6c8; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>写文章 ✍️</h1>
+  <div class="sub">在手机上记下此刻的想法，提交后一两分钟自动上线</div>
+
+  <label>标题</label>
+  <input type="text" id="title" placeholder="比如：第一次机考复盘" />
+
+  <div class="row">
+    <div>
+      <label>标签（用逗号分隔）</label>
+      <input type="text" id="tags" placeholder="反思, 面试" />
+    </div>
+    <div>
+      <label>分类</label>
+      <input type="text" id="cat" placeholder="随笔" />
+    </div>
+  </div>
+
+  <label>正文（支持 Markdown）</label>
+  <textarea id="body" placeholder="## 今天发生了什么&#10;&#10;写点什么吧……"></textarea>
+
+  <label>发布方式</label>
+  <div class="radio">
+    <span><input type="radio" name="draft" value="false" checked /> 直接发布</span>
+    <span><input type="radio" name="draft" value="true" /> 先存草稿</span>
+  </div>
+  <div class="hint">草稿不会出现在网站上，之后可以在 GitHub 里改成发布。</div>
+
+  <button class="btn" id="go">生成并提交到 GitHub →</button>
+  <button class="btn ghost" id="copy">复制 Markdown（备用）</button>
+  <div class="ok" id="ok">✅ 已复制 Markdown，去 GitHub 粘贴即可</div>
+
+  <div class="note">
+    <b>怎么用：</b>点上面的粉色按钮会打开 GitHub 的新建文件页（内容已自动填好），
+    确认文件名没问题后，点页面底部的绿色 <b>Commit changes</b> 就完成发布。
+    第一次使用需要在浏览器里登录一次 GitHub 账号。
+  </div>
+</div>
+
+<script>
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+
+  function pad(n) { return n < 10 ? "0" + n : "" + n; }
+
+  function nowStr() {
+    var d = new Date();
+    return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()) +
+           "T" + pad(d.getHours()) + ":" + pad(d.getMinutes()) + ":00+08:00";
+  }
+
+  function slug(s) {
+    return (s || "").replace(/[\\/:*?"<>|\s#]+/g, "-").replace(/^-+|-+$/g, "") || "未命名";
+  }
+
+  function build() {
+    var title = $("title").value.trim() || "未命名";
+    var tags = $("tags").value.split(/[,，]/).map(function (t) { return t.trim(); }).filter(Boolean);
+    var cat = $("cat").value.trim();
+    var draft = document.querySelector('input[name=draft]:checked').value;
+    var body = $("body").value.trim() || "（正文待补充）";
+
+    var fm = [
+      "---",
+      "title: '" + title.replace(/'/g, "''") + "'",
+      "date: '" + nowStr() + "'",
+      "draft: " + draft,
+      "tags: [" + tags.map(function (t) { return "'" + t.replace(/'/g, "''") + "'"; }).join(", ") + "]",
+      "categories: [" + (cat ? "'" + cat.replace(/'/g, "''") + "'" : "") + "]",
+      "description: ''",
+      "---",
+      "",
+      body,
+      ""
+    ].join("\n");
+
+    var fname = "content/posts/" + nowStr().slice(0, 10) + "-" + nowStr().slice(11, 13) + nowStr().slice(14, 16) + "-" + slug(title) + ".md";
+    return { md: fm, fname: fname };
+  }
+
+  $("go").addEventListener("click", function () {
+    var r = build();
+    var url = "https://github.com/huayuliu114514/huayuliu114514.github.io/new/main/?filename=" +
+              encodeURIComponent(r.fname) + "&value=" + encodeURIComponent(r.md);
+    window.open(url, "_blank");
+  });
+
+  $("copy").addEventListener("click", function () {
+    var r = build();
+    var text = r.fname + "\n\n" + r.md;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function () {
+        $("ok").style.display = "block";
+        setTimeout(function () { $("ok").style.display = "none"; }, 3000);
+      });
+    } else {
+      window.prompt("复制这段内容：", text);
+    }
+  });
+})();
+</script>
+</body>
+</html>

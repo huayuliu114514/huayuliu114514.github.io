@@ -1,0 +1,12 @@
+{{- /* ===== 万束屋：额外头部资源 ===== */ -}}
+
+{{- /* 可爱字体：站酷快乐体（Google Fonts 国内镜像 fonts.loli.net，速度快） */ -}}
+<link rel="preconnect" href="https://fonts.loli.net" crossorigin>
+<link rel="preconnect" href="https://gstatic.loli.net" crossorigin>
+<link href="https://fonts.loli.net/css2?family=ZCOOL+KuaiLe&display=swap" rel="stylesheet">
+
+{{- /* 樱花飘落动画（经 Hugo 资源管道压缩与指纹化） */ -}}
+{{- with resources.Get "js/petals.js" -}}
+  {{- $petals := . | js.Build | minify | fingerprint -}}
+<script defer src="{{ $petals.RelPermalink }}" integrity="{{ $petals.Data.Integrity }}"></script>
+{{- end -}}
