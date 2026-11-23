@@ -6,7 +6,7 @@ Hugo + PaperMod 主题，推送到 main 分支后由 GitHub Actions 自动部署
 
 ## 写一篇新文章
 
-1. 在 `C:\Users\12746\blog` 目录下运行：
+1. 在 `F:\BLOG` 目录下运行：
 
    ```
    hugo new content posts/文章名.md
