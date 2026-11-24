@@ -8,8 +8,14 @@
 
 :root {
     --cute-font: "ZCOOL KuaiLe", "ZCOOL Kuaile", "Yuanti SC", "YouYuan", "幼圆", "PingFang SC", "Microsoft YaHei", sans-serif;
-    --sakura-1: rgba(255, 211, 224, 0.60);
-    --sakura-2: rgba(255, 228, 237, 0.45);
+    /* 页面与卡片改为半透明，让 ATRI 壁纸透出来 */
+    --theme: transparent;
+    --entry: rgba(255, 252, 253, 0.88);
+}
+
+.dark {
+    --theme: transparent;
+    --entry: rgba(28, 28, 34, 0.88);
 }
 
 /* ---- 1. 可爱字体：站名 + 各级标题 ---- */
@@ -61,13 +67,44 @@ code { font-size: 0.9em; }
     line-height: 1.75;
 }
 
-/* ---- 3. 樱花背景与飘落动画 ---- */
+/* ---- 3. ATRI 壁纸背景与飘落动画 ---- */
 body {
     background:
-        radial-gradient(1100px 550px at 88% -8%, var(--sakura-1), transparent 60%),
-        radial-gradient(900px 520px at -12% 32%, var(--sakura-2), transparent 55%),
-        var(--theme);
-    background-attachment: fixed;
+        linear-gradient(rgba(255, 250, 252, 0.45), rgba(255, 250, 252, 0.45)),
+        url("/img/bg-1920.jpg") center / cover fixed no-repeat;
+}
+
+.dark body {
+    background:
+        linear-gradient(rgba(16, 16, 24, 0.62), rgba(16, 16, 24, 0.62)),
+        url("/img/bg-1920.jpg") center / cover fixed no-repeat;
+}
+
+/* 顶栏毛玻璃，滚动时壁纸从背后透出 */
+.header {
+    background: rgba(255, 250, 252, 0.78);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.dark .header {
+    background: rgba(22, 22, 28, 0.82);
+}
+
+/* 手机端用轻量背景图（iOS 上 fixed 背景有兼容问题，改用 scroll） */
+@media screen and (max-width: 900px) {
+    body {
+        background-image:
+            linear-gradient(rgba(255, 250, 252, 0.5), rgba(255, 250, 252, 0.5)),
+            url("/img/bg-960.jpg");
+        background-attachment: scroll;
+    }
+    .dark body {
+        background-image:
+            linear-gradient(rgba(16, 16, 24, 0.64), rgba(16, 16, 24, 0.64)),
+            url("/img/bg-960.jpg");
+        background-attachment: scroll;
+    }
 }
 
 .sakura-container {
