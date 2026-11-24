@@ -13,7 +13,7 @@
     --entry: rgba(255, 252, 253, 0.88);
 }
 
-.dark {
+:root[data-theme="dark"] {
     --theme: transparent;
     --entry: rgba(28, 28, 34, 0.88);
 }
@@ -68,13 +68,17 @@ code { font-size: 0.9em; }
 }
 
 /* ---- 3. ATRI 壁纸背景与飘落动画 ---- */
-body {
+/* 注意：首页 body 带 class="list"，主题 .list 的 background 简写会把
+   background-image 重置为 none，所以壁纸规则必须挂在 body.list 上
+   （0,1,1 优先级高于主题 .list 的 0,1,0） */
+body,
+body.list {
     background:
-        linear-gradient(rgba(255, 250, 252, 0.45), rgba(255, 250, 252, 0.45)),
+        linear-gradient(rgba(255, 250, 252, 0.35), rgba(255, 250, 252, 0.35)),
         url("/img/bg-1920.jpg") center / cover fixed no-repeat;
 }
 
-.dark body {
+:root[data-theme="dark"] body {
     background:
         linear-gradient(rgba(16, 16, 24, 0.62), rgba(16, 16, 24, 0.62)),
         url("/img/bg-1920.jpg") center / cover fixed no-repeat;
@@ -87,19 +91,20 @@ body {
     -webkit-backdrop-filter: blur(10px);
 }
 
-.dark .header {
+:root[data-theme="dark"] .header {
     background: rgba(22, 22, 28, 0.82);
 }
 
 /* 手机端用轻量背景图（iOS 上 fixed 背景有兼容问题，改用 scroll） */
 @media screen and (max-width: 900px) {
-    body {
+    body,
+    body.list {
         background-image:
-            linear-gradient(rgba(255, 250, 252, 0.5), rgba(255, 250, 252, 0.5)),
+            linear-gradient(rgba(255, 250, 252, 0.4), rgba(255, 250, 252, 0.4)),
             url("/img/bg-960.jpg");
         background-attachment: scroll;
     }
-    .dark body {
+    :root[data-theme="dark"] body {
         background-image:
             linear-gradient(rgba(16, 16, 24, 0.64), rgba(16, 16, 24, 0.64)),
             url("/img/bg-960.jpg");
@@ -136,7 +141,7 @@ body {
 }
 
 /* 暗色模式下花瓣更柔和 */
-.dark .sakura-petal {
+:root[data-theme="dark"] .sakura-petal {
     background: linear-gradient(135deg, #f2a6c2 10%, #e582a8 70%, #d96c96);
     opacity: 0.42;
 }
