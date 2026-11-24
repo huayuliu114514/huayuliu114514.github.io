@@ -170,3 +170,24 @@ body.list {
     .post-content { font-size: 1.05rem; }
     .logo a { font-size: 1.35rem; }
 }
+
+/* ---- 5. 正文浅色卡片：与草稿箱一致的毛玻璃背景 ---- */
+.post-single {
+    background: var(--entry);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px 32px;
+}
+
+.home-info {
+    background: var(--entry);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px 28px;
+    margin-bottom: var(--content-gap);
+}
+
+@media screen and (max-width: 600px) {
+    .post-single { padding: 20px 16px; }
+    .home-info { padding: 18px 16px; }
+}
