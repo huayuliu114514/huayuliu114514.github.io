@@ -1,0 +1,145 @@
+{{- define "main" }}
+<div class="drafts-app">
+  <header class="page-header">
+    <h1>草稿箱 📝</h1>
+    <div class="drafts-sub">从 GitHub 仓库实时读取的未发布文章</div>
+  </header>
+  <div id="drafts-status" class="drafts-status">正在加载草稿…</div>
+  <div id="drafts-list"></div>
+</div>
+
+<style>
+  .drafts-app { max-width: var(--main-width); margin: 0 auto; padding: 0 var(--gap); }
+  .drafts-sub { color: var(--secondary); font-size: .92rem; margin-bottom: 1.2em; }
+  .drafts-status { color: var(--secondary); margin-bottom: 12px; }
+  .draft-card {
+    background: var(--entry);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px 22px;
+    margin-bottom: 16px;
+  }
+  .draft-card h2 {
+    margin: 0 0 4px;
+    font-size: 1.35rem;
+    font-family: var(--cute-font);
+    letter-spacing: .03em;
+  }
+  .draft-meta { color: var(--secondary); font-size: .85rem; margin-bottom: 10px; }
+  .draft-toggle {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--primary);
+    border-radius: 6px;
+    padding: 5px 14px;
+    cursor: pointer;
+    font-size: .9rem;
+  }
+  .draft-toggle:hover { border-color: #ff9ec0; color: #ff7fae; }
+  .draft-body {
+    margin-top: 14px;
+    border-top: 1px dashed var(--border);
+    padding-top: 14px;
+    line-height: 1.8;
+    font-size: 1.02rem;
+  }
+  .draft-body h2, .draft-body h3 { font-family: var(--cute-font); letter-spacing: .03em; }
+  .draft-body img { max-width: 100%; border-radius: var(--radius); }
+  .draft-body pre { overflow-x: auto; background: var(--code-bg); padding: 12px; border-radius: var(--radius); }
+  .draft-body code { font-size: .9em; }
+  .drafts-empty {
+    background: var(--entry);
+    border: 1px dashed var(--border);
+    border-radius: var(--radius);
+    padding: 48px 20px;
+    text-align: center;
+    color: var(--secondary);
+  }
+  .drafts-empty a { color: #ff7fae; }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
+<script>
+(function () {
+  var OWNER = "huayuliu114514";
+  var REPO = "huayuliu114514.github.io";
+  var listEl = document.getElementById("drafts-list");
+  var statusEl = document.getElementById("drafts-status");
+
+  function esc(s) {
+    return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  }
+
+  fetch("https://api.github.com/repos/" + OWNER + "/" + REPO + "/git/trees/main?recursive=1")
+    .then(function (r) {
+      if (!r.ok) throw new Error("GitHub API " + r.status);
+      return r.json();
+    })
+    .then(function (data) {
+      var postFiles = (data.tree || []).filter(function (t) {
+        return t.path.indexOf("content/posts/") === 0 && t.path.slice(-3) === ".md";
+      });
+      return Promise.all(postFiles.map(function (t) {
+        return fetch("https://raw.githubusercontent.com/" + OWNER + "/" + REPO + "/main/" + t.path)
+          .then(function (r) { return r.ok ? r.text() : ""; })
+          .then(function (text) { return { path: t.path, text: text }; });
+      }));
+    })
+    .then(function (files) {
+      var drafts = [];
+      files.forEach(function (f) {
+        var m = f.text.match(/^---\n([\s\S]*?)\n---/);
+        if (!m) return;
+        var fm = m[1];
+        if (!/draft:\s*true/.test(fm)) return;
+        var title = (fm.match(/title:\s*'?([^'\n]+)'?/) || [null, f.path.split("/").pop()])[1];
+        var date = (fm.match(/date:\s*'?([^'\n]+)'?/) || [null, ""])[1];
+        var body = f.text.slice(m[0].length).trim();
+        drafts.push({ title: title, date: date, body: body });
+      });
+      drafts.sort(function (a, b) { return (b.date || "").localeCompare(a.date || ""); });
+
+      statusEl.textContent = "";
+      if (!drafts.length) {
+        listEl.innerHTML = '<div class="drafts-empty">还没有草稿～ 去 <a href="/write/">写文章</a> 存一篇吧 🌸</div>';
+        return;
+      }
+      drafts.forEach(function (d) {
+        var card = document.createElement("article");
+        card.className = "draft-card";
+
+        var h = document.createElement("h2");
+        h.textContent = d.title || "（无标题）";
+        card.appendChild(h);
+
+        var meta = document.createElement("div");
+        meta.className = "draft-meta";
+        meta.textContent = (d.date || "").replace("T", " ").slice(0, 16);
+        card.appendChild(meta);
+
+        var btn = document.createElement("button");
+        btn.className = "draft-toggle";
+        btn.textContent = "展开阅读";
+        card.appendChild(btn);
+
+        var body = document.createElement("div");
+        body.className = "draft-body";
+        body.innerHTML = marked.parse(d.body || "（空）");
+        body.style.display = "none";
+        card.appendChild(body);
+
+        btn.addEventListener("click", function () {
+          var open = body.style.display !== "none";
+          body.style.display = open ? "none" : "block";
+          btn.textContent = open ? "展开阅读" : "收起";
+        });
+
+        listEl.appendChild(card);
+      });
+    })
+    .catch(function (e) {
+      statusEl.textContent = "加载失败：" + esc(e.message) + "（请稍后重试）";
+    });
+})();
+</script>
+{{- end }}

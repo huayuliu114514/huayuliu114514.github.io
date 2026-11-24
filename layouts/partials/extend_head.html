@@ -1,5 +1,8 @@
 {{- /* ===== 万束屋：额外头部资源 ===== */ -}}
 
+{{- /* 草稿箱页不收录 */ -}}
+{{- if eq .Layout "drafts" -}}<meta name="robots" content="noindex">{{- end -}}
+
 {{- /* 可爱字体：站酷快乐体（Google Fonts 国内镜像 fonts.loli.net，速度快） */ -}}
 <link rel="preconnect" href="https://fonts.loli.net" crossorigin>
 <link rel="preconnect" href="https://gstatic.loli.net" crossorigin>
